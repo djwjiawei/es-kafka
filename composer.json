@@ -1,0 +1,30 @@
+{
+    "name": "es-swoole/kafka",
+    "authors": [
+        {
+            "name": "djw",
+            "email": "dongjw.1@jifenn.com"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "EsSwoole\\Kafka\\": "src/"
+        }
+    },
+    "repositories": [
+        {
+            "type": "git",
+            "url": "git@git.dev.enbrands.com:X/php/interaction/easyswoole_common.git"
+        }
+    ],
+    "require": {
+        "longlang/phpkafka": "^1.2",
+        "es-swoole/common": "dev-master"
+    },
+    "extra": {
+        "es-swoole": {
+            "config" : "EsSwoole\\Kafka\\ConfigPublish",
+            "provider" : "EsSwoole\\Kafka\\KafkaProvider"
+        }
+    }
+}
