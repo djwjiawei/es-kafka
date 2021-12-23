@@ -25,13 +25,12 @@ class KafkaProducerPool extends AbstractPool
 
     protected function createObject()
     {
-        $config = \config("kakfa.connections.{$this->conn}");
+        $config = \config("kafka.connections.{$this->conn}");
         $producerConfig = new ProducerConfig();
-        $producerConfig->setConnectTimeout($config['connect_timeout']);
-        $producerConfig->setSendTimeout($config['send_timeout']);
-        $producerConfig->setRecvTimeout($config['recv_timeout']);
-        $producerConfig->setClientId($config['client_id']);
-        $producerConfig->setBootstrapServers($config['bootstrap_servers']);
+        $producerConfig->setConnectTimeout($config['connectTimeout']);
+        $producerConfig->setSendTimeout($config['sendTimeout']);
+        $producerConfig->setRecvTimeout($config['recvTimeout']);
+        $producerConfig->setBootstrapServers($config['brokers']);
         $producerConfig->setAcks($config['acks']);
         return new Producer($producerConfig);
     }
