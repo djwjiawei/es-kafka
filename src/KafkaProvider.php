@@ -37,6 +37,7 @@ class KafkaProvider extends AbstractProvider
             $poolConfig->setMaxIdleTime($poolInfo['maxIdleTime'] ?: 60); //连接池对象最大闲置时间(秒)
             $poolConfig->setMinObjectNum($poolInfo['minObjNum'] ?: 1); //设置最小连接池存在连接对象数量
             $poolConfig->setMaxObjectNum($poolInfo['maxObjNum'] ?: 5); //设置最大连接池存在连接对象数量
+
             Manager::getInstance()->register(
                 new KafkaProducerPool($conn, $poolConfig),
                 $poolName
@@ -46,12 +47,15 @@ class KafkaProvider extends AbstractProvider
 
     public function boot()
     {
-        //todo 启动consumer
+        //启动consumer
         $consumers = \config('kafka.consumer');
         if (!$consumers) {
             return;
         }
         foreach ($consumers as $consumeName => $consumeConfig) {
+            if (!$consumeConfig) {
+                continue;
+            }
             //消费者组所用连接
             $consumeConn = $consumeConfig['connection'];
             if (!\config("kafka.connections.{$consumeConn}")) {
@@ -59,31 +63,26 @@ class KafkaProvider extends AbstractProvider
             }
             //启动对应数量的消费进程
             for ($i = 0; $i < $consumeConfig['processNums']; $i++) {
-                $consumeObj = new $consumeConfig['processClass'];
-                if (!($consumeObj instanceof AbstrctKafkaConsumeProcess)) {
-                    break;
-                }
-                $consumeObj->setConnection($consumeConfig['connection']);
-                $consumeObj->setTopic($consumeConfig['topic']);
-                $consumeObj->setGroupId($consumeConfig['groupId']);
-                $consumeObj->setAutoCommit($consumeConfig['autoCommit']);
-                $consumeObj->setConsumeIndex($i);
-                $consumeObj->setConsumeName($consumeName);
-
                 $processConfig = new \EasySwoole\Component\Process\Config([
                     'processName' => "Kafka.Consume.{$consumeName}_{$i}", //设置进程名称
                     'processGroup' => 'Kafka.Consume', //设置进程组名称
                     'enableCoroutine' => true, //设置开启协程
                 ]);
-                $process = new $consumeConfig['processClass']($processConfig);
-                \EasySwoole\Component\Process\Manager::getInstance()->addProcess($process);
+                $consumeProcess = new $consumeConfig['processClass']($processConfig);
+
+                if (!($consumeProcess instanceof AbstrctKafkaConsumeProcess)) {
+                    break;
+                }
+                $consumeProcess->setConnection($consumeConfig['connection']);
+                $consumeProcess->setTopic($consumeConfig['topic']);
+                $consumeProcess->setGroupId($consumeConfig['groupId']);
+                $consumeProcess->setAutoCommit($consumeConfig['autoCommit']);
+                $consumeProcess->setConsumeIndex($i);
+                $consumeProcess->setConsumeName($consumeName);
+
+                \EasySwoole\Component\Process\Manager::getInstance()->addProcess($consumeProcess);
             }
         }
-    }
-
-    protected function getConsumeConfig()
-    {
-
     }
 
 }

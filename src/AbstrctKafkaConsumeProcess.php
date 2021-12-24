@@ -71,23 +71,24 @@ abstract class AbstrctKafkaConsumeProcess extends AbstractUserProcess
         //连接配置
         $connConfig = config("kafka.connections.{$this->connection}");
         //消费配置
-        $consumeConfig = config("kafka.consume.{$this->consumeName}");
+        $consumeConfig = config("kafka.consumer.{$this->consumeName}");
 
         $consumerConfig = new ConsumerConfig();
+        $consumerConfig->setBootstrapServers($connConfig['brokers']);
         $consumerConfig->setConnectTimeout($connConfig['connectTimeout']);
         $consumerConfig->setSendTimeout($connConfig['sendTimeout']);
-        $consumerConfig->setRecvTimeout($connConfig['recvTimeout']);
 
         $consumerConfig->setAutoCommit($this->autoCommit);
         $consumerConfig->setTopic($this->topic);
         $consumerConfig->setRebalanceTimeout($consumeConfig['rebalanceTimeout']);
         $consumerConfig->setGroupId($consumeConfig['groupId']);
-        $consumerConfig->setGroupInstanceId(sprintf('%s-%s', $consumeConfig['groupId'], uniqid()));
+        $consumerConfig->setGroupInstanceId(sprintf('%s-%s', $consumeConfig['groupId'],$this->consumeIndex));
         $consumerConfig->setInterval($consumeConfig['interval']);
-        $consumerConfig->setBootstrapServers($connConfig['brokers']);
         $consumerConfig->setClientId(sprintf('%s-%s', $consumeConfig['groupId'], $this->consumeIndex));
         $consumerConfig->setSessionTimeout($consumeConfig['sessionTimeout']);
         $consumerConfig->setGroupHeartbeat($consumeConfig['groupHeartbeat']);
+        $consumerConfig->setMinBytes($consumeConfig['minBytes']);
+        $consumerConfig->setMaxBytes($consumeConfig['maxBytes']);
         $consumerConfig->setPartitionAssignmentStrategy($consumeConfig['partitionAssignmentStrategy']);
         return $consumerConfig;
     }

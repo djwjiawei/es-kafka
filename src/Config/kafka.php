@@ -23,35 +23,35 @@ return [
         ]
     ],
     //consume配置
-    'consume' => [
-        'exchange' => [
-            //消费者进程类,需要继承AbstrctKafkaConsumeProcess类
-            'processClass' => '',
-            //消费者进程数,建议和topic的分区数一样,不能大于topic的分区数
-            'processNums' => 1,
-            //要消费的topic,支持字符串或字符串数组
-            'topic' => '',
-            //消费者组名称
-            'groupId' => '',
-            //是否自动提交
-            'autoCommit' => true,
-            //拉不到消息时 sleep的时间单位/秒,支持小数
-            'interval' => 1,
-            //组协调器接收心跳超时时间,超过这个时间没发心跳,则认为这个消费者下线
-            'sessionTimeout' => 60,
-            //心跳间隔时间,要小于sessionTimeout
-            'groupHeartbeat' => 5,
-            //再平衡时,等待加入组的时间
-            'rebalanceTimeout' => 60,
-            //拉取的最小字节数
-            'minBytes' => 1,
-            //拉取的最大字节数
-            'maxBytes' => 128 * 1024 * 1024,
-            //消费分区分配策略
-            'partitionAssignmentStrategy' => \longlang\phpkafka\Consumer\Assignor\RangeAssignor::class,
-            //对应上边配置的connections的连接
-            'connection' => 'default'
-        ]
+    'consumer' => [
+//        'exchange' => [
+//            //消费者进程类,需要继承AbstrctKafkaConsumeProcess类
+//            'processClass' => '',
+//            //消费者进程数,建议和topic的分区数一样,不能大于topic的分区数
+//            'processNums' => 1,
+//            //要消费的topic,支持字符串或字符串数组
+//            'topic' => '',
+//            //消费者组名称
+//            'groupId' => '',
+//            //是否自动提交
+//            'autoCommit' => true,
+//            //拉不到消息时 sleep的时间单位/秒,支持小数
+//            'interval' => 1,
+//            //组协调器接收心跳超时时间,超过这个时间没发心跳,则认为这个消费者下线
+//            'sessionTimeout' => 200,
+//            //心跳间隔时间,要小于sessionTimeout
+//            'groupHeartbeat' => 10,
+//            //再平衡时,等待加入组的时间
+//            'rebalanceTimeout' => 120,
+//            //拉取的最小字节数
+//            'minBytes' => 1,
+//            //拉取的最大字节数
+//            'maxBytes' => 5 * 1024 * 1024,
+//            //消费分区分配策略
+//            'partitionAssignmentStrategy' => \longlang\phpkafka\Consumer\Assignor\RangeAssignor::class,
+//            //对应上边配置的connections的连接
+//            'connection' => 'default'
+//        ]
     ],
     //连接池配置
     'pool' => [
