@@ -1,4 +1,4 @@
-# easyswoole nacos包
+# easyswoole kafka包
 
 ## 安装包
 ```
@@ -19,7 +19,7 @@ composer require es-swoole/kafka:(dev-master或具体tag)
 - [x] 根据配置生成consume进程
 
 ## 使用步骤
-1. 安装本包(composer require es-swoole/nacos:dev-master或具体tag)
+1. 安装本包(composer require es-swoole/kafka:dev-master或具体tag)
 2. 在根目录的bootstrap文件中添加:
 \EasySwoole\Command\CommandManager::getInstance()->addCommand(new \EsSwoole\Base\Command\PublishConfig());  用于发布vendor包配置 
 5. 执行php easyswoole publish:config --vendor=es-swoole/kafka 发布本包配置
