@@ -35,6 +35,7 @@ class Producer extends LongLangProducer
     {
         try {
             $this->send($topic, $value, $key, $headers, $partitionIndex);
+            return true;
         } catch (\Throwable $e) {
             Logger::getInstance()->error(
                 "sendOne Exception: topic-{$topic};value-{$value}; exception-{$e->getMessage()}", "kafka"
@@ -60,6 +61,7 @@ class Producer extends LongLangProducer
     {
         try {
             $this->sendBatch($messages);
+            return true;
         } catch (\Throwable $e) {
             $log = [];
             foreach ($messages as $msgObj) {
