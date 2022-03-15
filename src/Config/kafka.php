@@ -22,6 +22,8 @@ return [
             'acks' => 1
         ]
     ],
+    //是否启动消费进程
+    'isConsume' => true,
     //consume配置
     'consumer' => [
 //        'exchange' => [
@@ -38,11 +40,11 @@ return [
 //            //拉不到消息时 sleep的时间单位/秒,支持小数
 //            'interval' => 1,
 //            //组协调器接收心跳超时时间,超过这个时间没发心跳,则认为这个消费者下线
-//            'sessionTimeout' => 200,
+//            'sessionTimeout' => 120,
 //            //心跳间隔时间,要小于sessionTimeout
 //            'groupHeartbeat' => 10,
 //            //再平衡时,等待加入组的时间
-//            'rebalanceTimeout' => 120,
+//            'rebalanceTimeout' => 20,
 //            //拉取的最小字节数
 //            'minBytes' => 1,
 //            //拉取的最大字节数

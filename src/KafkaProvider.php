@@ -8,23 +8,39 @@
 
 namespace EsSwoole\Kafka;
 
-
 use EasySwoole\Pool\Config;
 use EasySwoole\Pool\Manager;
 use EsSwoole\Base\Abstracts\AbstractProvider;
 
+/**
+ * Class KafkaProvider
+ *
+ * @author dongjw <dongjw.1@jifenn.com>
+ */
 class KafkaProvider extends AbstractProvider
 {
 
+    /**
+     * Register
+     * User: dongjw
+     * Date: 2022/3/15 10:30
+     */
     public function register()
     {
         //注入kafka连接池
         $config = \config('kafka.connections');
-        foreach ($config as $conn => $data){
+        foreach ($config as $conn => $data) {
             $this->registerProducerPool($conn);
         }
     }
 
+    /**
+     * 注入连接池
+     *
+     * @param string $conn
+     * User: dongjw
+     * Date: 2022/3/15 10:30
+     */
     public function registerProducerPool($conn)
     {
         $poolName = KafkaManager::getPoolName($conn);
@@ -39,19 +55,30 @@ class KafkaProvider extends AbstractProvider
             $poolConfig->setMaxObjectNum($poolInfo['maxObjNum'] ?: 5); //设置最大连接池存在连接对象数量
 
             Manager::getInstance()->register(
-                new KafkaProducerPool($conn, $poolConfig),
-                $poolName
+                new KafkaProducerPool($conn, $poolConfig), $poolName
             );
         }
     }
 
+    /**
+     * Boot
+     *
+     * User: dongjw
+     * Date: 2022/3/15 10:30
+     */
     public function boot()
     {
+        $kafkaConfig = \config('kafka');
+        if (!$kafkaConfig['isConsume']) {
+            return;
+        }
+
         //启动consumer
-        $consumers = \config('kafka.consumer');
+        $consumers = $kafkaConfig['consumer'];
         if (!$consumers) {
             return;
         }
+
         foreach ($consumers as $consumeName => $consumeConfig) {
             if (!$consumeConfig) {
                 continue;
@@ -63,11 +90,13 @@ class KafkaProvider extends AbstractProvider
             }
             //启动对应数量的消费进程
             for ($i = 0; $i < $consumeConfig['processNums']; $i++) {
-                $processConfig = new \EasySwoole\Component\Process\Config([
-                    'processName' => "Kafka.Consume.{$consumeName}_{$i}", //设置进程名称
-                    'processGroup' => 'Kafka.Consume', //设置进程组名称
-                    'enableCoroutine' => true, //设置开启协程
-                ]);
+                $processConfig  = new \EasySwoole\Component\Process\Config(
+                    [
+                        'processName'     => "Kafka.Consume.{$consumeName}_{$i}", //设置进程名称
+                        'processGroup'    => 'Kafka.Consume', //设置进程组名称
+                        'enableCoroutine' => true, //设置开启协程
+                    ]
+                );
                 $consumeProcess = new $consumeConfig['processClass']($processConfig);
 
                 if (!($consumeProcess instanceof AbstrctKafkaConsumeProcess)) {
