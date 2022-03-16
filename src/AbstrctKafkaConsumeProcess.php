@@ -130,7 +130,8 @@ abstract class AbstrctKafkaConsumeProcess extends AbstractProcess
             );
             $consumer->start();
         } catch (\Throwable $e) {
-            Logger::getInstance()->error('consume Exception:' . $e->getMessage(), 'kafka');
+            $processName = $this->getProcessName() ?: '';
+            Logger::getInstance()->error($processName . 'consume Exception:' . $e->getMessage(), 'kafka');
             ExceptionHandler::report($e);
 
             //终止进程,否则进程会一直挂起 不消费
