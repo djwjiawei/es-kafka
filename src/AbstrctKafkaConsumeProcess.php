@@ -9,7 +9,7 @@
 namespace EsSwoole\Kafka;
 
 use EasySwoole\EasySwoole\Logger;
-use EsSwoole\Base\Abstracts\AbstractUserProcess;
+use EasySwoole\Component\Process\AbstractProcess;
 use EsSwoole\Base\Exception\ExceptionHandler;
 use longlang\phpkafka\Consumer\ConsumeMessage;
 use longlang\phpkafka\Consumer\Consumer;
@@ -21,7 +21,7 @@ use longlang\phpkafka\Exception\KafkaErrorException;
  *
  * @author dongjw <dongjw.1@jifenn.com>
  */
-abstract class AbstrctKafkaConsumeProcess extends AbstractUserProcess
+abstract class AbstrctKafkaConsumeProcess extends AbstractProcess
 {
     //连接名
     protected $connection;
@@ -132,6 +132,9 @@ abstract class AbstrctKafkaConsumeProcess extends AbstractUserProcess
         } catch (KafkaErrorException $e) {
             Logger::getInstance()->error('consume Exception:' . $e->getMessage(), 'kafka');
             ExceptionHandler::report($e);
+
+            //终止进程,否则进程会一直挂起 不消费
+            \Swoole\Process::kill(posix_getpid());
         }
     }
 
