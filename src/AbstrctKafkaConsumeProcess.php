@@ -129,7 +129,7 @@ abstract class AbstrctKafkaConsumeProcess extends AbstractProcess
             }
             );
             $consumer->start();
-        } catch (KafkaErrorException $e) {
+        } catch (\Throwable $e) {
             Logger::getInstance()->error('consume Exception:' . $e->getMessage(), 'kafka');
             ExceptionHandler::report($e);
 
