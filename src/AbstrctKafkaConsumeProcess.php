@@ -147,7 +147,7 @@ abstract class AbstrctKafkaConsumeProcess extends AbstractProcess
 
         try {
             beginning:
-            Logger::getInstance()->info($this->getProcessName() . '开始run....');
+            Logger::getInstance()->info($this->getProcessName() . '开始run...');
 
             $hasInit = false;
 
@@ -161,7 +161,7 @@ abstract class AbstrctKafkaConsumeProcess extends AbstractProcess
 
             $this->isClose = false;
 
-            Logger::getInstance()->info($this->getProcessName() . '初始化结束....');
+            Logger::getInstance()->info($this->getProcessName() . '初始化结束...');
 
             $this->consumer->start();
         } catch (\Throwable $e) {
@@ -180,10 +180,13 @@ abstract class AbstrctKafkaConsumeProcess extends AbstractProcess
             //将consumer设为null
             $this->consumer = null;
 
+            //增加重试次数
+            $retryTimes++;
+
+            //未达到最大重试次数 继续重试
             if ($retryTimes <= $this->maxRetryTimes) {
-                //未达到最大重试次数 继续重试
-                $retryTimes++;
                 usleep($this->retrySleep * 1000);
+
                 //重新start
                 goto beginning;
             } else {
@@ -216,12 +219,13 @@ abstract class AbstrctKafkaConsumeProcess extends AbstractProcess
                     //标识为已关闭 防止run方法继续执行
                     $this->isClose = true;
                     Logger::getInstance()->info($this->getProcessName() . '进程term退出 close结束');
-
-                    //清除资源
-                    \Swoole\Timer::clearAll();
-                    Event::exit();
                 }
+
                 Logger::getInstance()->info($this->getProcessName() . '进程term退出');
+
+                //清除定时器和事件监听,否则进程不会结束
+                \Swoole\Timer::clearAll();
+                Event::exit();
             });
         }
         );
